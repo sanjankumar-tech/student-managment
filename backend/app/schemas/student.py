@@ -1,6 +1,12 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 class StudentCreate(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     age: int
+
+class StudentResponse(StudentCreate):
+    id: int
+
+    class Config:
+        from_attributes = True

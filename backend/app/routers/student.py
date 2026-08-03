@@ -45,3 +45,42 @@ def create_student(student: StudentCreate, db: Session = Depends(get_db)):
             "age": new_student.age
         }
     }
+    @router.get("/{student_id}")
+    def get_student(studnet_id: int, db: Session = Depends(get_db)):
+        student = db.query(Student).filter(Student.id == student_id).first()
+        
+        if student is None:
+            return {"message": "Student not found"} 
+        return student
+
+@router.put("/{student_id}")
+def update_student(student_id: int, student: StudentCreate, db: Session = Depends(get_db)):
+    db_student = db.query(Student).filter(Student.id == student_id).first()
+
+    if db_student is None:
+        return {"message": "Student not found"}
+
+    db_student.name = student.name
+    db_student.email = student.email
+    db_student.age = student.age
+
+    db.commit()
+    db.refresh(db_student)
+
+    return {
+        "message": "Student updated successfully",
+        "student": db_student
+    }
+@router.delete("/{student_id}")
+def delete_student(student_id: int, db: Session = Depends(get_db)):
+    student = db.query(Student).filter(Student.id == student_id).first()
+
+    if student is None:
+        return {"message": "Student not found"}
+
+    db.delete(student)
+    db.commit()
+
+    return {
+        "message": "Student deleted successfully"
+    }
